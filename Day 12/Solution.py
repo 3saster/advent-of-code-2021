@@ -7,8 +7,6 @@ def parseData(data):
 def cavePaths(caveGraph,visits,start='start',smallVisits=1):
     if(start == 'end'):
         return [['end']]
-    if len(caveGraph[start]) == 0:
-        return [[start]]
 
     paths = []
     for c in caveGraph[start]:
@@ -36,8 +34,7 @@ def Part1(data):
     visits = {k:0 for k in caveGraph.keys()}
     visits['end'] = 0
 
-    validPaths = [p for p in cavePaths(caveGraph,visits,smallVisits=1) if p[-1]=='end']
-    return len(validPaths)
+    return len(cavePaths(caveGraph,visits,smallVisits=1))
 
 def Part2(data):
     caves = parseData(data)
@@ -50,5 +47,4 @@ def Part2(data):
     visits = {k:0 for k in caveGraph.keys()}
     visits['end'] = 0
     
-    validPaths = [p for p in cavePaths(caveGraph,visits,smallVisits=2) if p[-1]=='end']
-    return len(validPaths)
+    return len(cavePaths(caveGraph,visits,smallVisits=2))

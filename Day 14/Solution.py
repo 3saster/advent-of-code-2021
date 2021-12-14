@@ -1,5 +1,5 @@
 import re
-from collections import Counter
+from collections import Counter,defaultdict
 
 def parseData(data):
     poly = data[0]
@@ -8,14 +8,25 @@ def parseData(data):
 
 class polymer:
     def __init__(self,poly,rules):
-        self.poly = poly
-        self.rules = rules
+        # dictionary of how many of each pair appear in the polymer
+        self.poly = defaultdict(lambda:0)
+        for i in range(len(poly)-1):
+            self.poly[poly[i:i+2]] += 1
+        # dictionary with the two pairs certain pairs produce
+        self.rules = {r[0]:[ r[0][0]+r[1],r[1]+r[0][1] ] for r in rules}
+        # dictionary of how many of each single letter appear in the polymer
+        self.counts = defaultdict(lambda:0,Counter(poly))
 
     def advance(self):
-        for r in self.rules:
-            while r[0] in self.poly:
-                self.poly = self.poly.replace(r[0],r[0][0]+r[1].lower()+r[0][1])
-        self.poly = self.poly.upper()
+        matched = {k:v for k,v in self.poly.items() if k in self.rules.keys()}
+        for pair,num in matched.items():
+            # remove all matched pairs
+            self.poly[pair] -= num 
+            # add newly generated pairs
+            self.poly[self.rules[pair][0]] += num
+            self.poly[self.rules[pair][1]] += num
+            # add newly generated letters
+            self.counts[self.rules[pair][0][1]] += num
 
         
     
@@ -26,13 +37,13 @@ def Part1(data):
     polymerTemplate = polymer(poly,rules)
     for _ in range(10):
         polymerTemplate.advance()
-    count = Counter(polymerTemplate.poly).most_common()
-    return( count[0][1] - count[-1][1] )
+    count = polymerTemplate.counts.values()
+    return( max(count)-min(count) )
 
 def Part2(data):
     poly,rules = parseData(data)
     polymerTemplate = polymer(poly,rules)
     for _ in range(40):
         polymerTemplate.advance()
-    count = Counter(polymerTemplate.poly).most_common()
-    return( count[0][1] - count[-1][1] )
+    count = polymerTemplate.counts.values()
+    return( max(count)-min(count) )

@@ -1,5 +1,3 @@
-import re
-
 def parseData(data):
     coord =  set([tuple(int(n) for n in d.split(',')) for d in data if ',' in d])
     folds = []
